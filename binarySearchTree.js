@@ -66,6 +66,7 @@ function mergeSort(array) {
     return orderedArray = merge(sortedLeft, sortedRight);
 }
 
+// Worst case is O n*2, as it loops through the array twice. With a large enough data set I could compare an array of all duplicates
 function checkDuplicates(array) {
     // This fn checks duplicates after an array has been sorted
 
@@ -89,6 +90,7 @@ function checkDuplicates(array) {
     return filteredArray;
 }
 
+// Worst case is O n
 function removeDuplicates(arr) {
     if (arr.length === 0) return [];
 
@@ -141,15 +143,200 @@ class Tree {
             this.prettyPrint(node.left, `${prefix}${isLeft ? "    " : "│   "}`, true);  // <-- Modified to use `this.prettyPrint`
         }
     }
+
+    insert(value) {
+
+        let currentPointer = this.root;
+        let newNode = new Node(value);
+        let i = 0;
+
+        while (currentPointer) {
+            if (value < currentPointer.data) {
+                if (!currentPointer.left) {
+                    currentPointer.left = newNode;
+                    return;
+                }
+                currentPointer = currentPointer.left;
+            } else if (value > currentPointer.data) {
+                if (!currentPointer.right) {
+                    currentPointer.right = newNode;
+                    return;
+                }
+                currentPointer = currentPointer.right;
+            } else {
+                console.log("Value Already Exists in Tree");
+                return;
+            }
+        }
+    }
+
+    delete(value) {
+
+
+        let currentPointer = this.root;
+        let previousPointer = currentPointer;
+        let isLeftChild = false;
+        let isRightChild = false;
+
+        while (currentPointer.data != value) {
+
+            if (value < currentPointer.data) {
+                previousPointer = currentPointer;
+                currentPointer = currentPointer.left;
+                isLeftChild = true;
+                isRightChild = false;
+            } 
+    
+            if (value > currentPointer.data) {
+                previousPointer = currentPointer;
+                currentPointer = currentPointer.right;
+                isLeftChild = false;
+                isRightChild = true;
+            }
+
+        }
+
+        // Node to be deleted has no children
+        if (currentPointer.data == value && currentPointer.right == null && currentPointer.left == null) {
+            if (isLeftChild) {
+                previousPointer.left = null;
+                return;
+            }
+
+            if (isRightChild) {
+                previousPointer.right = null;
+                return;
+            }
+        }
+
+        let hasLeftChild = false;
+        let hasRightChild = false;
+        let isRootNumber = false;
+        let children = 0;
+        
+        if (currentPointer.left) {
+            children++;
+            hasLeftChild = true;
+        }
+
+        if (currentPointer.right) {
+            children++;
+            hasRightChild = true;
+        }
+
+        if (currentPointer.data == this.root.data) {
+            isRootNumber = true;
+        }
+
+        // Node to be deleted has exactly 1 child
+        if (currentPointer.data == value && children == 1) {
+            if (hasLeftChild) {
+                if(isLeftChild) {
+                    previousPointer.left = currentPointer.left;
+                    return;
+                }
+
+                if (isRightChild) {
+                    previousPointer.right = currentPointer.left;
+                    return;
+                }
+            }
+
+            if (hasRightChild) {
+                if(isLeftChild) {
+                    previousPointer.left = currentPointer.right;
+                    return;
+                }
+
+                if (isRightChild) {
+                    previousPointer.right = currentPointer.right;
+                    return;
+                }
+            }
+        }
+
+        if (currentPointer.data == value && children == 2) {
+
+            let nodeToBeRemoved = currentPointer;
+            previousPointer = currentPointer;
+            currentPointer = currentPointer.right;
+            
+            while (currentPointer.left != null) {
+                previousPointer = currentPointer;
+                currentPointer = currentPointer.left;
+            }
+
+            console.log(currentPointer);
+
+            // replacement node found / check if 0 or 1 children exist
+
+            // 0 children case
+            if (isRightChild || isRootNumber) {
+                if (!currentPointer.right && !currentPointer.left) {
+
+                    if (currentPointer == previousPointer.left) {
+                        nodeToBeRemoved.data = currentPointer.data;
+                        previousPointer.left = null;
+                    } else {
+                        nodeToBeRemoved.data = currentPointer.data;
+                        previousPointer.right = null;
+                    }
+
+
+                // 1 child case
+                }  else {
+                    if (currentPointer.right > previousPointer.data) {
+                        previousPointer.right = currentPointer.right
+                    } else {
+                        previousPointer.left = currentPointer.right
+                    } 
+            }
+             nodeToBeRemoved.data = currentPointer.data;
+          }
+
+          if (isLeftChild) {
+            if (!currentPointer.right && !currentPointer.left) {
+
+                if (currentPointer.data == previousPointer.right.data) {
+                    nodeToBeRemoved.data = currentPointer.data;
+                    previousPointer.right = null;
+                }
+
+                if (currentPointer.data == previousPointer.left.data) {
+                    nodeToBeRemoved.data = currentPointer.data;
+                    previousPointer.left = null;
+                }
+
+            } 
+            // else {
+            //     previousPointer.right = currentPointer.right;
+            // }
+          }
+        }
+
+    }
 }
 
 
-let testArray = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324, 6345];
+let testArray = [1, 7, 4, 23, 8, 9, 4, 3, 5, 10, 9, 67, 6345, 324, 6345, 2];
 
 let sortedArray = mergeSort(testArray);
 let array = removeDuplicates(sortedArray);
 let length = array.length;
 
+
 let treeBoyo = new Tree(array);
 
+
+
+treeBoyo.insert(300);
+treeBoyo.insert(6);
+treeBoyo.insert(600)
+treeBoyo.insert(0);
+treeBoyo.insert(6.5)
+treeBoyo.insert(5.5)
+treeBoyo.prettyPrint();
+// treeBoyo.insert(2);
+// treeBoyo.insert(250);
+treeBoyo.delete(5);
 treeBoyo.prettyPrint();
