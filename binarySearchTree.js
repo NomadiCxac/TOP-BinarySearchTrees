@@ -124,6 +124,8 @@ function buildTree (array, start, end) {
     return newNode;
 }
 
+
+
 class Tree {
     constructor(array) {
         this.sortedArray = mergeSort(array);
@@ -180,6 +182,7 @@ class Tree {
 
         while (currentPointer.data != value) {
 
+
             if (value < currentPointer.data) {
                 previousPointer = currentPointer;
                 currentPointer = currentPointer.left;
@@ -194,7 +197,11 @@ class Tree {
                 isRightChild = true;
             }
 
+            console.log(currentPointer);
+          
         }
+
+   
 
         // Node to be deleted has no children
         if (currentPointer.data == value && currentPointer.right == null && currentPointer.left == null) {
@@ -338,5 +345,6 @@ treeBoyo.insert(5.5)
 treeBoyo.prettyPrint();
 // treeBoyo.insert(2);
 // treeBoyo.insert(250);
-treeBoyo.delete(5);
+// treeBoyo.delete(325325);
+treeBoyo.delete(4.2);
 treeBoyo.prettyPrint();
