@@ -129,7 +129,7 @@ function buildTree (array, start, end) {
 class Tree {
     constructor(array) {
         this.sortedArray = mergeSort(array);
-        this.filteredArray = removeDuplicates(sortedArray);
+        this.filteredArray = removeDuplicates(this.sortedArray);
         this.root = buildTree(this.filteredArray, 0, this.filteredArray.length - 1);
     }
 
@@ -180,7 +180,9 @@ class Tree {
         let isLeftChild = false;
         let isRightChild = false;
 
-        while (currentPointer.data != value) {
+       
+
+        while (currentPointer !== null && currentPointer.data != value) {
 
 
             if (value < currentPointer.data) {
@@ -188,17 +190,19 @@ class Tree {
                 currentPointer = currentPointer.left;
                 isLeftChild = true;
                 isRightChild = false;
-            } 
-    
-            if (value > currentPointer.data) {
+            } else if (value > currentPointer.data) {
                 previousPointer = currentPointer;
                 currentPointer = currentPointer.right;
                 isLeftChild = false;
                 isRightChild = true;
             }
+ 
+        }
 
-            console.log(currentPointer);
-          
+        // Value does not exist in the tree
+        if (currentPointer === null) {
+            console.log("Value not found in the tree.");
+            return false;
         }
 
    
@@ -273,8 +277,6 @@ class Tree {
                 currentPointer = currentPointer.left;
             }
 
-            console.log(currentPointer);
-
             // replacement node found / check if 0 or 1 children exist
 
             // 0 children case
@@ -320,31 +322,279 @@ class Tree {
             // }
           }
         }
+    }
 
+    find (value) {
+        
+        let currentPointer = this.root;
+        let previousPointer = currentPointer;
+
+
+        while (currentPointer !== null && currentPointer.data != value) {
+
+
+            if (value < currentPointer.data) {
+                previousPointer = currentPointer;
+                currentPointer = currentPointer.left;
+            } else if (value > currentPointer.data) {
+                previousPointer = currentPointer;
+                currentPointer = currentPointer.right;
+            }
+        }
+
+        // Value does not exist in the tree
+        if (currentPointer === null) {
+            console.log("Value not found in the tree.");
+            return false;
+        }
+        // console.log(currentPointer);
+        return currentPointer;
+
+
+    }
+
+    levelOrder(node = this.root) {
+
+        let queue = [];
+        let result = []
+
+        if (node == null) {
+            return;
+        } else {
+            queue.push(node);
+        }
+
+        while (queue.length != 0) {
+
+            if (queue[0].left) {
+                queue.push(queue[0].left)
+            }
+    
+            if (queue[0].right) {
+                queue.push(queue[0].right)
+            }
+
+            result.push(queue[0].data);
+            queue.shift();
+        }
+
+        console.log(result);
+        return result;
+    }
+
+
+    preorder(node = this.root, resultArray = []) {
+
+        if (node == null) {
+            return;
+        }
+
+        resultArray.push(node.data);
+
+        this.preorder(node.left, resultArray);
+        this.preorder(node.right, resultArray);
+
+        return resultArray;
+    }
+
+    inorder(node = this.root, resultArray = []) {
+
+        if (node == null) {
+            return;
+        }
+
+        this.inorder(node.left, resultArray);
+        resultArray.push(node.data);
+        this.inorder(node.right, resultArray);
+
+        return resultArray;
+    }
+
+    postorder(node = this.root, resultArray = []) {
+
+        if (node == null) {
+            return;
+        }
+
+        this.postorder(node.left, resultArray);
+        this.postorder(node.right, resultArray);
+        resultArray.push(node.data);
+
+        return resultArray;
+    }
+
+    getHeight(node) {
+
+        // Once you have the node, the rest remains the same.
+        if (!node) {
+            return -1;  // Note: This might be redundant given the above condition, but is kept for clarity.
+        }
+
+        let leftHeight = this.getHeight(node.left);
+        let rightHeight = this.getHeight(node.right);
+
+        return Math.max(leftHeight, rightHeight) + 1;
+    }
+
+    getDepth(node) {
+
+        let currentPointer = this.root;
+        let previousPointer = currentPointer;
+        let value = node.data;
+        let depth = 0;
+
+        if (node == false) {
+            console.log("Illegal Node Found");
+            return node;
+        }
+
+        if (node == this.root) {
+            return depth;
+        }
+
+        while (value != currentPointer) {
+            
+            if (value < currentPointer.data) {
+                previousPointer = currentPointer;
+                currentPointer = currentPointer.left;
+                depth++;
+            } else if (value > currentPointer.data) {
+                previousPointer = currentPointer;
+                currentPointer = currentPointer.right;
+                depth++;
+            } else {
+                return depth;
+            }
+        }
+    }
+
+    isBalanced(node = this.root) {
+
+    // Base case: an empty tree is balanced
+    if (node == null) {
+        return true;
+    }
+
+    let leftHeight = this.getHeight(node.left);
+    let rightHeight = this.getHeight(node.right);
+
+    let diff = Math.abs(leftHeight - rightHeight);
+
+    // Check the balance condition for the current node and for its left and right subtrees
+    if (diff > 1) {
+        return false;
+    }
+    
+    if (!this.isBalanced(node.left)) {
+        return false;
+    }
+    
+    if (!this.isBalanced(node.right)) {
+        return false;
+    }
+    
+    return true;
+    }
+
+    rebalance() {
+        let rebalancedArray = this.inorder();
+        return rebalancedArray;
     }
 }
 
+function randomLessThan100() {
+    return Math.floor(Math.random() * 100);
+}
 
-let testArray = [1, 7, 4, 23, 8, 9, 4, 3, 5, 10, 9, 67, 6345, 324, 6345, 2];
+function randomGreaterThan100() {
+    return 100 + Math.floor(Math.random() * 900); // This generates a number between 101 and 999
+}
 
-let sortedArray = mergeSort(testArray);
-let array = removeDuplicates(sortedArray);
-let length = array.length;
+function randomBetween0And10() {
+    return Math.floor(Math.random() * 11); // This includes both 0 and 10
+}
+
+function driverScript () {
+
+    let newArray = []
+    let arraySize = randomLessThan100();
+
+    for (let i = 0; i < arraySize; i++) {
+        newArray.push(randomLessThan100());
+    }
+    
+    let newTree = new Tree(newArray);
+
+    // newTree.prettyPrint();
+
+    if (newTree.isBalanced) {
+        console.log("Balanced");
+        // console.log(newTree.levelOrder());
+        // console.log(newTree.preorder());
+        // console.log(newTree.postorder());
+        // console.log(newTree.inorder());
+    } else {
+        console.log("False")
+    }
+
+    let unbalanceValue = randomBetween0And10();
+
+    for (let i = 0; i < unbalanceValue; i++) {
+        newTree.insert(randomGreaterThan100());
+    }
+
+    if (newTree.isBalanced() == false) {
+        console.log("Unbalanced");
+        let rebalancedArray = newTree.rebalance()
+        let newestTree = new Tree (rebalancedArray);
+        if (newestTree.isBalanced()) {
+            console.log("Balanced")
+            console.log(newestTree.levelOrder());
+            console.log(newestTree.preorder());
+            console.log(newestTree.postorder());
+            console.log(newestTree.inorder());
+            newestTree.prettyPrint();
+        }
+    }
+
+}
+
+driverScript();
 
 
-let treeBoyo = new Tree(array);
+// let testArray = [1, 7, 4, 23, 8, 9, 4, 3, 5, 10, 9, 67, 6345, 324, 6345, 2];
+
+// let sortedArray = mergeSort(testArray);
+// let array = removeDuplicates(sortedArray);
+// let length = array.length;
+
+
+// let treeBoyo = new Tree(array);
+// treeBoyo.insert(600)
+// treeBoyo.insert(601)
 
 
 
-treeBoyo.insert(300);
-treeBoyo.insert(6);
-treeBoyo.insert(600)
-treeBoyo.insert(0);
-treeBoyo.insert(6.5)
-treeBoyo.insert(5.5)
-treeBoyo.prettyPrint();
-// treeBoyo.insert(2);
-// treeBoyo.insert(250);
-// treeBoyo.delete(325325);
-treeBoyo.delete(4.2);
-treeBoyo.prettyPrint();
+// treeBoyo.prettyPrint();
+// let x = treeBoyo.find(3);
+// let y = treeBoyo.find(600);
+// // console.log(treeBoyo.getHeight(x));
+// // console.log(treeBoyo.getDepth(y))
+
+// if (treeBoyo.isBalanced()) {
+//     console.log("Tree is balanced");
+// } else {
+//     console.log("Tree is Unbalanced");
+//     let rebalancedArray = treeBoyo.inorder();
+//     let treeBoyo2 = new Tree(rebalancedArray);
+//     treeBoyo2.prettyPrint()
+//     if (treeBoyo2.isBalanced()) {
+//         console.log("Tree is balanced")
+//     }
+// }
+
+
+
+
+// console.log(treeBoyo.postorder());
+
